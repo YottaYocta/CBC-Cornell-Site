@@ -20,7 +20,7 @@ interface IsometricCornellProps {
 }
 
 const TILE_SIZE = 20;
-const PADDING = 40;
+const PADDING = 20;
 
 const IsometricCornell: React.FC<IsometricCornellProps> = ({
   width = 15,
@@ -141,11 +141,11 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
           rendered.push(
             <g
               key={`${x}-${y}-${z}`}
-              className={
+              className={`animate-plop-down ${
                 isTopGrass
-                  ? "hover:-translate-y-1 duration-75 transition hover:brightness-110 cursor-pointer"
+                  ? "hover:-translate-y-1 active:translate-y-0 duration-75 transition hover:brightness-110 active:brightness-125 cursor-pointer"
                   : undefined
-              }
+              }`}
               onClick={isTopGrass ? () => handleAddTower(x, y, z) : undefined}
             >
               {voxelElement}
