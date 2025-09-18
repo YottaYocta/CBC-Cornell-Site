@@ -84,7 +84,7 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
             rendered.push(
               <g
                 key={`${x}-${y}-${z}`}
-                className="hover:-translate-y-1 duration-75 transition"
+                className="hover:-translate-y-1 duration-75 transition hover:brightness-110"
               >
                 {voxel.kind === "cube"
                   ? drawCubeVoxel(x, y, z, voxel.color, voxel.lineColor)
