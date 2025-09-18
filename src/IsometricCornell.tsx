@@ -8,6 +8,7 @@ interface Voxel {
   mesh: VoxelMesh;
   color: string;
   lineColor?: string;
+  original: boolean;
 }
 
 type VoxelGrid = (Voxel | null)[][][];
@@ -104,16 +105,19 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
         type: "tower",
         mesh: "cube",
         color: towerColor,
+        original: false,
       };
       newVoxels[x][y][z + 2] = {
         type: "tower",
         mesh: "cube",
         color: towerColor,
+        original: false,
       };
       newVoxels[x][y][z + 3] = {
         type: "tower",
         mesh: "pyramid",
         color: towerColor,
+        original: false,
       };
 
       return newVoxels;
@@ -141,7 +145,7 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
           rendered.push(
             <g
               key={`${x}-${y}-${z}`}
-              className={`animate-plop-down ${
+              className={`${voxel.original ? "" : "animate-plop-down"} ${
                 isTopGrass
                   ? "hover:-translate-y-1 active:translate-y-0 duration-75 transition hover:brightness-110 active:brightness-125 cursor-pointer"
                   : undefined
@@ -214,6 +218,7 @@ function populateBlock(width: number, height: number): VoxelGrid {
           type: "grass",
           mesh: "cube",
           color: baseColor,
+          original: true,
         };
       }
     }
@@ -237,16 +242,19 @@ function populateBlock(width: number, height: number): VoxelGrid {
         type: "tower",
         mesh: "cube",
         color: towerColor,
+        original: true,
       };
       block[x][y][topZ + 2] = {
         type: "tower",
         mesh: "cube",
         color: towerColor,
+        original: true,
       };
       block[x][y][topZ + 3] = {
         type: "tower",
         mesh: "pyramid",
         color: towerColor,
+        original: true,
       };
 
       usedCoords.add(`${x},${y}`);
