@@ -1,5 +1,6 @@
 import "@fontsource/inika";
 import Icon from "./assets/tempIcon.svg?react";
+import IsometricCornell from "./IsometricCornell";
 
 function App() {
   return (
@@ -26,7 +27,16 @@ function App() {
           </div>
         </div>
       </nav>
-      <main className="w-full h-full flex flex-col items-center bg-background gap-8 py-8 text-neutral-800 px-4">
+      <main className="w-full h-full flex flex-col items-center bg-background gap-8 py-8 text-neutral-800 px-4 text-justify">
+        <div className="w-xl max-w-full flex justify-between items-start ">
+          <h1 className="text-lg font-bold text-start">What Will You Make?</h1>
+          <h2 className="text-end">Claude Builders Club @ Cornell</h2>
+        </div>
+        <IsometricCornell
+          width={15}
+          height={10}
+          className="w-xl max-w-full"
+        ></IsometricCornell>
         <section id="about" className="w-xl max-w-full flex flex-row gap-8">
           <div className="flex-1 flex flex-col items-start justify-center gap-2">
             <h2 className="text-sm text-neutral-400">About</h2>
