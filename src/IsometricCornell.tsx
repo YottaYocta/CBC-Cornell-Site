@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 
-type CubeVoxel = {
-  kind: "cube";
+type VoxelType = "grass" | "tower";
+type VoxelMesh = "cube" | "pyramid";
+
+interface Voxel {
+  type: VoxelType;
+  mesh: VoxelMesh;
   color: string;
   lineColor?: string;
-};
+}
 
-type PyramidVoxel = {
-  kind: "pyramid";
-  color: string;
-  lineColor?: string;
-};
-
-type Voxel = null | CubeVoxel | PyramidVoxel;
+type VoxelGrid = (Voxel | null)[][][];
 
 interface IsometricCornellProps {
   width?: number;
@@ -22,14 +20,14 @@ interface IsometricCornellProps {
 }
 
 const TILE_SIZE = 20;
-const PADDING = 20; // extra space around the scene
+const PADDING = 40;
 
 const IsometricCornell: React.FC<IsometricCornellProps> = ({
   width = 15,
   height = 10,
   className,
 }) => {
-  const [voxels, setVoxels] = useState<Voxel[][][] | null>(null);
+  const [voxels, setVoxels] = useState<VoxelGrid | null>(null);
   const [bounds, setBounds] = useState<{
     minX: number;
     minY: number;
@@ -40,58 +38,119 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
   useEffect(() => {
     const populated = populateBlock(width, height);
     setVoxels(populated);
+  }, [width, height]);
 
-    // Compute bounds from all projected voxel corners
-    let minX = Infinity;
-    let minY = Infinity;
-    let maxX = -Infinity;
-    let maxY = -Infinity;
+  useEffect(() => {
+    // Compute bounds
+    if (voxels) {
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
 
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < width; y++) {
-        for (let z = 0; z < height; z++) {
-          if (populated[x][y][z]) {
-            const [isoX, isoY] = isoProject(x, y, z);
+      for (let x = 0; x < voxels.length; x++) {
+        for (let y = 0; y < voxels[x].length; y++) {
+          for (let z = 0; z < voxels[x][y].length; z++) {
+            const voxel = voxels[x][y][z];
+            if (voxel) {
+              const [isoX, isoY] = isoProject(x, y, z);
 
-            // Estimate bounds for full cube size
-            minX = Math.min(minX, isoX);
-            minY = Math.min(minY, isoY - TILE_SIZE * 0.5); // top face goes higher
-            maxX = Math.max(maxX, isoX + TILE_SIZE * 2); // right face extends to the right
-            maxY = Math.max(maxY, isoY + TILE_SIZE * 1.5); // left face goes lower
+              minX = Math.min(minX, isoX);
+              minY = Math.min(minY, isoY - TILE_SIZE * 0.5);
+              maxX = Math.max(maxX, isoX + TILE_SIZE * 2);
+              maxY = Math.max(maxY, isoY + TILE_SIZE * 1.5);
+            }
           }
         }
       }
+
+      setBounds({
+        minX: minX - PADDING,
+        minY: minY - PADDING,
+        maxX: maxX + PADDING,
+        maxY: maxY + PADDING,
+      });
+    }
+  }, [voxels]);
+
+  function checkAbove(x: number, y: number, z: number): boolean {
+    if (!voxels) return false;
+
+    for (let dz = z + 1; dz <= z + 3; dz++) {
+      if (dz >= height) continue;
+      if (voxels[x]?.[y]?.[dz]) return false;
     }
 
-    setBounds({
-      minX: minX - PADDING,
-      minY: minY - PADDING,
-      maxX: maxX + PADDING,
-      maxY: maxY + PADDING,
+    return true;
+  }
+
+  function handleAddTower(x: number, y: number, z: number) {
+    setVoxels((prev) => {
+      if (!prev) return prev;
+
+      const newVoxels = [...prev.map((col) => col.map((stack) => [...stack]))]; // Deep clone 3D array
+
+      const currentCol = newVoxels[x][y];
+      const requiredHeight = z + 4;
+
+      // Expand column height if needed
+      while (currentCol.length < requiredHeight) {
+        currentCol.push(null);
+      }
+
+      const towerColor = toHSLString({ h: 45, s: 80, l: 88 });
+
+      newVoxels[x][y][z + 1] = {
+        type: "tower",
+        mesh: "cube",
+        color: towerColor,
+      };
+      newVoxels[x][y][z + 2] = {
+        type: "tower",
+        mesh: "cube",
+        color: towerColor,
+      };
+      newVoxels[x][y][z + 3] = {
+        type: "tower",
+        mesh: "pyramid",
+        color: towerColor,
+      };
+
+      return newVoxels;
     });
-  }, [width, height]);
+  }
 
   const renderVoxels = () => {
     if (!voxels) return null;
 
     const rendered = [];
 
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < width; y++) {
-        for (let z = 0; z < height; z++) {
+    for (let x = 0; x < voxels.length; x++) {
+      for (let y = 0; y < voxels[x].length; y++) {
+        for (let z = 0; z < voxels[x][y].length; z++) {
           const voxel = voxels[x][y][z];
-          if (voxel) {
-            rendered.push(
-              <g
-                key={`${x}-${y}-${z}`}
-                className="hover:-translate-y-1 duration-75 transition hover:brightness-110"
-              >
-                {voxel.kind === "cube"
-                  ? drawCubeVoxel(x, y, z, voxel.color, voxel.lineColor)
-                  : drawPyramidVoxel(x, y, z, voxel.color, voxel.lineColor)}
-              </g>
-            );
-          }
+          if (!voxel) continue;
+
+          const isTopGrass = voxel.type === "grass" && checkAbove(x, y, z);
+
+          const voxelElement =
+            voxel.mesh === "cube"
+              ? drawCubeVoxel(x, y, z, voxel.color, voxel.lineColor)
+              : drawPyramidVoxel(x, y, z, voxel.color, voxel.lineColor);
+
+          rendered.push(
+            <g
+              key={`${x}-${y}-${z}`}
+              className={
+                isTopGrass
+                  ? "hover:-translate-y-1 duration-75 transition hover:brightness-110 cursor-pointer"
+                  : undefined
+              }
+              onClick={isTopGrass ? () => handleAddTower(x, y, z) : undefined}
+            >
+              {voxelElement}
+            </g>
+          );
         }
       }
     }
@@ -99,7 +158,7 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
     return rendered;
   };
 
-  if (!bounds) return null; // wait until bounds are calculated
+  if (!bounds) return null;
 
   const viewBoxWidth = bounds.maxX - bounds.minX;
   const viewBoxHeight = bounds.maxY - bounds.minY;
@@ -110,7 +169,7 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
       strokeLinecap="round"
       viewBox={`${bounds.minX} ${bounds.minY} ${viewBoxWidth} ${viewBoxHeight}`}
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className={`${className}`}
     >
       {renderVoxels()}
     </svg>
@@ -123,8 +182,8 @@ export default IsometricCornell;
 // -- Helper Functions --
 //
 
-function populateBlock(width: number, height: number): Voxel[][][] {
-  const block: Voxel[][][] = Array.from({ length: width }, () =>
+function populateBlock(width: number, height: number): VoxelGrid {
+  const block: VoxelGrid = Array.from({ length: width }, () =>
     Array.from({ length: width }, () =>
       Array.from({ length: height }, () => null)
     )
@@ -133,43 +192,35 @@ function populateBlock(width: number, height: number): Voxel[][][] {
   const solidHeight = 1;
   const maxWaveHeight = height - solidHeight - 1;
 
-  // Constants to control wave properties
-  const sinPeriod = 2; // controls wavelength of sine on x-axis
-  const cosPeriod = 9; // controls wavelength of cosine on y-axis
-  const globalOffset = (Math.PI / 4) * Math.random(); // fixed phase offset for entire map
+  const sinPeriod = 2;
+  const cosPeriod = 9;
+  const globalOffset = (Math.PI / 4) * Math.random();
 
-  // --- Step 1: Base terrain generation with smooth waves ---
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < width; y++) {
-      // Use controlled sin and cos wave with fixed offset
       const waveHeight =
         Math.sin(x / sinPeriod + globalOffset) +
         Math.cos(y / cosPeriod + globalOffset);
 
-      // Normalize waveHeight from [-2, 2] to [0, maxWaveHeight]
       const additionalHeight = Math.floor(
         ((waveHeight + 2) / 4) * maxWaveHeight
       );
-
       const h = solidHeight + additionalHeight;
 
-      for (let z = 0; z < h; z++) {
-        const baseColor = toHSLString({
-          h: 116,
-          s: 46,
-          l: 93,
-        });
+      const baseColor = toHSLString({ h: 116, s: 46, l: 93 });
 
+      for (let z = 0; z < h; z++) {
         block[x][y][z] = {
-          kind: "cube",
+          type: "grass",
+          mesh: "cube",
           color: baseColor,
         };
       }
     }
   }
 
-  // --- Step 2: Tower placement ---
-  const towerCount = Math.floor(Math.random() * 5) + 3; // 1 or 2 towers
+  // Tower placement
+  const towerCount = Math.floor(Math.random() * 5) + 3;
   const usedCoords = new Set<string>();
 
   let attempts = 0;
@@ -180,23 +231,22 @@ function populateBlock(width: number, height: number): Voxel[][][] {
     const topZ = column.findLastIndex((v) => v !== null);
 
     if (topZ + 3 < height) {
-      const baseColor = toHSLString({
-        h: 45,
-        s: 80,
-        l: 88,
-      });
+      const towerColor = toHSLString({ h: 45, s: 80, l: 88 });
 
       block[x][y][topZ + 1] = {
-        kind: "cube",
-        color: baseColor,
+        type: "tower",
+        mesh: "cube",
+        color: towerColor,
       };
       block[x][y][topZ + 2] = {
-        kind: "cube",
-        color: baseColor,
+        type: "tower",
+        mesh: "cube",
+        color: towerColor,
       };
       block[x][y][topZ + 3] = {
-        kind: "pyramid",
-        color: baseColor,
+        type: "tower",
+        mesh: "pyramid",
+        color: towerColor,
       };
 
       usedCoords.add(`${x},${y}`);
@@ -289,7 +339,6 @@ function drawPyramidVoxel(
   const p3: [number, number] = isoProject(x + 2, y + 1, z);
   const p2: [number, number] = isoProject(x + 2, y, z);
 
-  // Apex of the pyramid (centered top)
   const apex: [number, number] = isoProject(x + 1.5, y + 0.5, z + 1);
 
   const polygon = (pts: [number, number][]) =>
@@ -297,15 +346,12 @@ function drawPyramidVoxel(
 
   return (
     <>
-      {/* Front-left face: p0 -> apex -> p3 */}
       <path
         d={polygon([p0, apex, p3])}
         fill={shadeColor(color, -5)}
         stroke={stroke}
         strokeWidth="0.5"
       />
-
-      {/* Front-right face: p3 -> apex -> p2 */}
       <path
         d={polygon([p3, apex, p2])}
         fill={shadeColor(color, -10)}
