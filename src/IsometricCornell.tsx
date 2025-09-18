@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-type Voxel = null | { color: string };
+type CubeVoxel = {
+  kind: "cube";
+  color: string;
+  lineColor?: string;
+};
+
+type PyramidVoxel = {
+  kind: "pyramid";
+  color: string;
+  lineColor?: string;
+};
+
+type Voxel = null | CubeVoxel | PyramidVoxel;
 
 interface IsometricCornellProps {
   width?: number;
@@ -10,7 +22,7 @@ interface IsometricCornellProps {
 }
 
 const TILE_SIZE = 20;
-const PADDING = 40; // extra space around the scene
+const PADDING = 20; // extra space around the scene
 
 const IsometricCornell: React.FC<IsometricCornellProps> = ({
   width = 15,
@@ -35,9 +47,9 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
     let maxX = -Infinity;
     let maxY = -Infinity;
 
-    for (let z = 0; z < height; z++) {
+    for (let x = 0; x < width; x++) {
       for (let y = 0; y < width; y++) {
-        for (let x = 0; x < width; x++) {
+        for (let z = 0; z < height; z++) {
           if (populated[x][y][z]) {
             const [isoX, isoY] = isoProject(x, y, z);
 
@@ -64,14 +76,20 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
 
     const rendered = [];
 
-    // Back-to-front rendering
-    for (let z = 0; z < height; z++) {
+    for (let x = 0; x < width; x++) {
       for (let y = 0; y < width; y++) {
-        for (let x = 0; x < width; x++) {
+        for (let z = 0; z < height; z++) {
           const voxel = voxels[x][y][z];
           if (voxel) {
             rendered.push(
-              <g key={`${x}-${y}-${z}`}>{drawVoxel(x, y, z, voxel.color)}</g>
+              <g
+                key={`${x}-${y}-${z}`}
+                className="hover:-translate-y-1 duration-75 transition"
+              >
+                {voxel.kind === "cube"
+                  ? drawCubeVoxel(x, y, z, voxel.color, voxel.lineColor)
+                  : drawPyramidVoxel(x, y, z, voxel.color, voxel.lineColor)}
+              </g>
             );
           }
         }
@@ -88,6 +106,8 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
 
   return (
     <svg
+      strokeLinejoin="round"
+      strokeLinecap="round"
       viewBox={`${bounds.minX} ${bounds.minY} ${viewBoxWidth} ${viewBoxHeight}`}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -110,32 +130,106 @@ function populateBlock(width: number, height: number): Voxel[][][] {
     )
   );
 
+  const solidHeight = 1;
+  const maxWaveHeight = height - solidHeight - 1;
+
+  // Constants to control wave properties
+  const sinPeriod = 2; // controls wavelength of sine on x-axis
+  const cosPeriod = 9; // controls wavelength of cosine on y-axis
+  const globalOffset = (Math.PI / 4) * Math.random(); // fixed phase offset for entire map
+
+  // --- Step 1: Base terrain generation with smooth waves ---
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < width; y++) {
-      const h = Math.floor(
-        (Math.sin(x / 2) + Math.cos(y / 3)) * (height / 4) + height / 2
+      // Use controlled sin and cos wave with fixed offset
+      const waveHeight =
+        Math.sin(x / sinPeriod + globalOffset) +
+        Math.cos(y / cosPeriod + globalOffset);
+
+      // Normalize waveHeight from [-2, 2] to [0, maxWaveHeight]
+      const additionalHeight = Math.floor(
+        ((waveHeight + 2) / 4) * maxWaveHeight
       );
 
-      for (let z = 0; z < h && z < height; z++) {
+      const h = solidHeight + additionalHeight;
+
+      for (let z = 0; z < h; z++) {
+        const baseColor = toHSLString({
+          h: 116,
+          s: 46,
+          l: 93,
+        });
+
         block[x][y][z] = {
-          color: `hsl(${(x * 10 + y * 5 + z * 15) % 360}, 60%, 60%)`,
+          kind: "cube",
+          color: baseColor,
         };
       }
     }
   }
 
+  // --- Step 2: Tower placement ---
+  const towerCount = Math.floor(Math.random() * 5) + 3; // 1 or 2 towers
+  const usedCoords = new Set<string>();
+
+  let attempts = 0;
+  while (usedCoords.size < towerCount && attempts < 20) {
+    const x = Math.floor(Math.random() * width);
+    const y = Math.floor(Math.random() * width);
+    const column = block[x][y];
+    const topZ = column.findLastIndex((v) => v !== null);
+
+    if (topZ + 3 < height) {
+      const baseColor = toHSLString({
+        h: 45,
+        s: 80,
+        l: 88,
+      });
+
+      block[x][y][topZ + 1] = {
+        kind: "cube",
+        color: baseColor,
+      };
+      block[x][y][topZ + 2] = {
+        kind: "cube",
+        color: baseColor,
+      };
+      block[x][y][topZ + 3] = {
+        kind: "pyramid",
+        color: baseColor,
+      };
+
+      usedCoords.add(`${x},${y}`);
+    }
+
+    attempts++;
+  }
+
   return block;
 }
 
-function isoProject(x: number, y: number, z: number, tileSize = TILE_SIZE) {
+function isoProject(
+  x: number,
+  y: number,
+  z: number,
+  tileSize = TILE_SIZE
+): [number, number] {
   const isoX = (x - y) * tileSize;
   const isoY = (x + y) * tileSize * 0.5 - z * tileSize;
   return [isoX, isoY];
 }
 
-function drawVoxel(x: number, y: number, z: number, color: string) {
+function drawCubeVoxel(
+  x: number,
+  y: number,
+  z: number,
+  color: string,
+  lineColor?: string
+) {
   const [isoX, isoY] = isoProject(x, y, z);
   const size = TILE_SIZE;
+
+  const stroke = lineColor ?? shadeColor(color, -40);
 
   const top = `
     M ${isoX},${isoY}
@@ -163,19 +257,59 @@ function drawVoxel(x: number, y: number, z: number, color: string) {
       <path
         d={top}
         fill={shadeColor(color, 0)}
-        stroke="#ccc"
+        stroke={stroke}
         strokeWidth="0.5"
       />
       <path
         d={left}
-        fill={shadeColor(color, -15)}
-        stroke="#bbb"
+        fill={shadeColor(color, -5)}
+        stroke={stroke}
         strokeWidth="0.5"
       />
       <path
         d={right}
-        fill={shadeColor(color, -30)}
-        stroke="#aaa"
+        fill={shadeColor(color, -15)}
+        stroke={stroke}
+        strokeWidth="0.5"
+      />
+    </>
+  );
+}
+
+function drawPyramidVoxel(
+  x: number,
+  y: number,
+  z: number,
+  color: string,
+  lineColor?: string
+) {
+  const stroke = lineColor ?? shadeColor(color, -40);
+
+  const p0: [number, number] = isoProject(x + 1, y + 1, z);
+  const p3: [number, number] = isoProject(x + 2, y + 1, z);
+  const p2: [number, number] = isoProject(x + 2, y, z);
+
+  // Apex of the pyramid (centered top)
+  const apex: [number, number] = isoProject(x + 1.5, y + 0.5, z + 1);
+
+  const polygon = (pts: [number, number][]) =>
+    `M ${pts.map(([x, y]) => `${x},${y}`).join(" L ")} Z`;
+
+  return (
+    <>
+      {/* Front-left face: p0 -> apex -> p3 */}
+      <path
+        d={polygon([p0, apex, p3])}
+        fill={shadeColor(color, -5)}
+        stroke={stroke}
+        strokeWidth="0.5"
+      />
+
+      {/* Front-right face: p3 -> apex -> p2 */}
+      <path
+        d={polygon([p3, apex, p2])}
+        fill={shadeColor(color, -10)}
+        stroke={stroke}
         strokeWidth="0.5"
       />
     </>
@@ -183,11 +317,28 @@ function drawVoxel(x: number, y: number, z: number, color: string) {
 }
 
 function shadeColor(color: string, percent: number): string {
-  const match = color.match(/^hsl\((\d+),\s*([\d.]+)%,\s*([\d.]+)%\)$/);
+  const match = color.match(
+    /hsl\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)/i
+  );
+
   if (!match) return color;
 
-  const [, h, s, l] = match;
-  const newL = Math.max(0, Math.min(100, parseFloat(l) + percent));
+  const [, hStr, sStr, lStr] = match;
+  let h = parseFloat(hStr);
+  const s = parseFloat(sStr);
+  const l = parseFloat(lStr);
 
-  return `hsl(${h}, ${s}%, ${newL}%)`;
+  const newL = Math.max(0, Math.min(100, l + percent));
+  h = normalizeHue(h);
+
+  return toHSLString({ h, s, l: newL });
+}
+
+function toHSLString({ h, s, l }: { h: number; s: number; l: number }): string {
+  h = normalizeHue(h);
+  return `hsl(${Math.round(h)}, ${Math.round(s)}%, ${Math.round(l)}%)`;
+}
+
+function normalizeHue(h: number): number {
+  return ((h % 360) + 360) % 360;
 }

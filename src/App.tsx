@@ -28,15 +28,23 @@ function App() {
         </div>
       </nav>
       <main className="w-full h-full flex flex-col items-center bg-background gap-8 py-8 text-neutral-800 px-4 text-justify">
-        <div className="w-xl max-w-full flex justify-between items-start ">
-          <h1 className="text-lg font-bold text-start">What Will You Make?</h1>
-          <h2 className="text-end">Claude Builders Club @ Cornell</h2>
+        <div className="w-xl relative max-w-full flex justify-between items-start sm:text-lg sm:leading-6">
+          <h1 className="flex flex-col font-bold text-start">
+            <span>What Will You</span>
+            <span>Make?</span>
+            {/* What Will You Make? */}
+          </h1>
+          <h2 className="text-end flex flex-col">
+            <span>Claude Builders Club</span>
+            <span>@ Cornell</span>
+          </h2>
         </div>
         <IsometricCornell
-          width={15}
-          height={10}
-          className="w-xl max-w-full"
+          width={10}
+          height={6}
+          className="w-xl max-w-full -mt-4"
         ></IsometricCornell>
+
         <section id="about" className="w-xl max-w-full flex flex-row gap-8">
           <div className="flex-1 flex flex-col items-start justify-center gap-2">
             <h2 className="text-sm text-neutral-400">About</h2>
