@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #fdfbf9;
+  --font-inika: "Inika", sans-serif;
+}
