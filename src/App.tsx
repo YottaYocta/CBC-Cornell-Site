@@ -59,7 +59,14 @@ function App() {
               projects that push the boundaries of what's possible with modern
               AI tools.{" "}
               <span className="font-bold">
-                We meet Fridays 6-8pm in Kennedy Hall{" "}
+                We meet Fridays 6-7pm in{" "}
+                <a
+                  href="https://maps.app.goo.gl/BiRiri7wyg4baEUh9"
+                  target="_blank"
+                  className="underline"
+                >
+                  CTown eHub
+                </a>{" "}
               </span>
             </p>
           </div>
