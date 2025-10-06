@@ -1,112 +1,186 @@
 import "@fontsource/inika";
 import Icon from "./assets/tempIcon.svg?react";
 import IsometricCornell from "./IsometricCornell";
+import UpcomingEvents from "./UpcomingEvents";
+
+// Event data
+type CalendarEvent = {
+  date: Date;
+  title: string;
+};
+
+const upcomingEvents: CalendarEvent[] = [
+  {
+    date: new Date("2025-09-23T12:00:00-08:00"),
+    title: "Societal Impacts of AI",
+  },
+  {
+    date: new Date("2025-09-24T16:00:00-08:00"),
+    title: "Claude Code",
+  },
+  {
+    date: new Date("2025-09-30T13:00:00-08:00"),
+    title: "AI Research Salon",
+  },
+  {
+    date: new Date("2025-10-01T16:00:00-08:00"),
+    title: "Building Agents",
+  },
+  {
+    date: new Date("2025-10-07T12:00:00-08:00"),
+    title: "Claude Code",
+  },
+  {
+    date: new Date("2025-10-08T16:00:00-08:00"),
+    title: "Societal Impacts of AI",
+  },
+  {
+    date: new Date("2025-10-21T12:00:00-08:00"),
+    title: "Building Agents",
+  },
+  {
+    date: new Date("2025-10-22T16:00:00-08:00"),
+    title: "AI Research Salon",
+  },
+  {
+    date: new Date("2025-10-28T12:00:00-08:00"),
+    title: "Building with MCP",
+  },
+  {
+    date: new Date("2025-10-29T16:00:00-08:00"),
+    title: "Building with MCP",
+  },
+  {
+    date: new Date("2025-11-12T12:00:00-08:00"),
+    title: "Claude Code",
+  },
+  {
+    date: new Date("2025-11-12T16:00:00-08:00"),
+    title: "Entering the workforce in a post AI world",
+  },
+];
+
+function formatEventDate(date: Date): string {
+  const day = date.toLocaleDateString("en-US", { weekday: "short" });
+  const dateNum = date.getDate();
+  const suffix =
+    dateNum % 10 === 1 && dateNum !== 11
+      ? "st"
+      : dateNum % 10 === 2 && dateNum !== 12
+      ? "nd"
+      : dateNum % 10 === 3 && dateNum !== 13
+      ? "rd"
+      : "th";
+  return `${day}, ${dateNum}${suffix}`;
+}
+
+function formatEventTime(date: Date): string {
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
 
 function App() {
+  const now = new Date();
+  const futureEvents = upcomingEvents
+    .filter((event) => event.date >= now)
+    .map((event) => ({
+      name: event.title,
+      date: formatEventDate(event.date),
+      time: formatEventTime(event.date),
+      month: event.date.toLocaleDateString("en-US", { month: "long" }),
+    }));
+
   return (
-    <div className="w-full min-h-screen flex flex-col bg-background font-inika sm:text-base text-sm">
+    <div className="w-full min-h-screen flex flex-col bg-background font-inika sm:text-base text-sm leading-8">
       <nav className="w-full bg-white flex items-center justify-center border-b border-neutral-100 px-4">
-        <div className="w-xl max-w-full h-min flex justify-between py-3 items-center">
+        <div className="w-2xl max-w-full h-min flex justify-between py-3 items-center">
           <div className="flex gap-4 w-min items-center">
             <Icon className="w-10 h-10" />
-            <p className="text-nowrap">CBC @ Cornell</p>
+            <p className="text-nowrap">Claude Builders Club @ Cornell</p>
           </div>
-          <div className="flex gap-8 items-center">
-            <a
-              href="https://join.slack.com/t/cornellclaude-suc1909/shared_invite/zt-3cyow4z6c-Ql14rUGf3JIj9T6P_efZ0g"
-              target="_blank"
-            >
-              <button className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md text-sm transition duration-75 cursor-pointer">
-                Join our Slack
-              </button>
-            </a>
+          <div className="flex gap-8 items-center text-sm">
             {/* <a href="#about" className="text-nowrap">
               About
             </a>
-            <a href="#projects" className="text-nowrap">
-              Projects
+            <a href="#upcoming-events" className="text-nowrap">
+              Upcoming
             </a>
             <a href="#our-team" className="text-nowrap">
               Our Team
             </a> */}
+            <a
+              href="https://join.slack.com/t/cornellclaude-suc1909/shared_invite/zt-3cyow4z6c-Ql14rUGf3JIj9T6P_efZ0g"
+              target="_blank"
+            >
+              <button className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md transition duration-75 cursor-pointer text-nowrap">
+                Join our Slack
+              </button>
+            </a>
           </div>
         </div>
       </nav>
       <main className="w-full min-h-full h-full flex flex-col items-center bg-background gap-8 py-8 text-neutral-800 px-4 text-justify">
-        <div className="w-xl relative max-w-full flex justify-between items-start sm:text-lg sm:leading-6">
-          <h1 className="flex flex-col font-bold text-start">
-            <span>What Will You</span>
-            <span>Build?</span>
-            {/* What Will You Make? */}
-          </h1>
-          <h2 className="text-end flex flex-col">
-            <span>Claude Builders Club</span>
-            <span>@ Cornell</span>
-          </h2>
-        </div>
         <IsometricCornell
           width={10}
           height={6}
-          className="w-xl max-w-full -mt-4 min-h-64 sm:min-h-96 "
+          className="w-2xl max-w-full -mt-4 min-h-64 sm:min-h-96 "
         ></IsometricCornell>
 
-        <section id="about" className="w-xl max-w-full flex flex-row gap-8">
-          <div className="flex-1 flex flex-col items-start justify-center gap-2">
-            <h2 className="text-sm text-neutral-400">About</h2>
-            <p>
-              Cornell's Claude Builders Club is a student-run branch of the
-              Claude's Builder Club Program. We aim to build, learn, and share
-              projects that push the boundaries of what's possible with modern
-              AI tools.{" "}
-              <span className="font-bold">
-                We meet Fridays 6-7pm in{" "}
-                <a
-                  href="https://maps.app.goo.gl/BiRiri7wyg4baEUh9"
-                  target="_blank"
-                  className="underline"
-                >
-                  CTown eHub
-                </a>{" "}
-              </span>
-            </p>
-          </div>
-          {/* <div className="flex-1 bg-green-200 h-48"></div>{" "} */}
-          {/* Empty image slot */}
+        <section
+          id="about"
+          className="w-2xl max-w-full flex flex-col gap-2 justify-center"
+        >
+          {/* <h2 className="w-full sm:text-lg text-neutral-400 border-b border-b-neutral-300">
+            About
+          </h2> */}
+          <p>
+            Cornell's Claude Builders Club is a student-run branch of
+            Anthropic's Claude Builders Club Program. We aim to build, learn,
+            and share projects that push the boundaries of what's possible with
+            modern AI tools.{" "}
+          </p>
         </section>
 
-        {/* <section id="projects" className="w-xl max-w-full flex flex-row gap-8">
-          <div className="flex-1 flex flex-col items-start justify-center">
-            <h2 className="text-sm text-neutral-400">Projects</h2>
-            <p>No projects</p>
-          </div>
-          <div className="flex-1 bg-green-200 h-48"></div>{" "}
-        </section> */}
+        <section
+          id="upcoming-events"
+          className="w-2xl max-w-full flex flex-col gap-8"
+        >
+          <h2 className="w-full sm:text-lg text-neutral-400 border-b border-b-neutral-300">
+            Events
+          </h2>
 
-        <section id="our-team" className="w-xl max-w-full flex flex-row gap-8">
-          <div className="flex-1 flex flex-col items-start justify-center gap-2">
-            <h2 className="text-sm text-neutral-400">Our Team</h2>
-            <p>
-              CBC @ Cornell is open to all, regardless of technical background.
-              Just join{" "}
-              <a
-                href="https://join.slack.com/t/cornellclaude-suc1909/shared_invite/zt-3cyow4z6c-Ql14rUGf3JIj9T6P_efZ0g"
-                className="underline font-bold cursor-pointer"
-              >
-                our slack
-              </a>{" "}
-              and attend weekly meetings{" "}
-            </p>
-            <p>
-              Membership perks include free Claude API credits, a Claude Pro
-              account, and the opportunity to collaborate with some of the best
-              designers, developers, and creatives at Cornell
-            </p>
-          </div>
-          {/* <div className="flex-1 bg-green-200 h-48"></div>{" "} */}
-          {/* Empty image slot */}
+          <UpcomingEvents events={futureEvents} />
+        </section>
+
+        <section
+          id="our-team"
+          className="w-2xl max-w-full flex flex-col justify-center items-start gap-2"
+        >
+          <h2 className="w-full text-neutral-400 border-b border-b-neutral-300 text-nowrap sm:text-lg">
+            Our Team
+          </h2>
+          <p>
+            CBC @ Cornell is open to all, regardless of technical background.
+            Just join{" "}
+            <a
+              href="https://join.slack.com/t/cornellclaude-suc1909/shared_invite/zt-3cyow4z6c-Ql14rUGf3JIj9T6P_efZ0g"
+              className="underline font-bold cursor-pointer"
+            >
+              our slack
+            </a>{" "}
+            and attend weekly meetings{" "}
+          </p>
+          <p>
+            Membership perks include free Claude API credits, a Claude Pro
+            account, and the opportunity to collaborate with some of the best
+            designers, developers, and creatives at Cornell
+          </p>
         </section>
         <footer className="w-full h-min flex items-center justify-center px-4 py-1 sm:py-2 mt-8 sm:mt-16">
-          <div className="w-xl max-w-full flex items-center justify-center gap-4">
+          <div className="w-2xl max-w-full flex items-center justify-center gap-4">
             <a
               href="https://www.instagram.com/claudeatcornell/"
               className="cursor-pointer underline text-neutral-400"
