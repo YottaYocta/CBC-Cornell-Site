@@ -5,11 +5,20 @@ export type Event = {
 
 type UpcomingEventsProps = {
   events: Event[];
+  showAll: boolean;
 };
 
-export default function UpcomingEvents({ events }: UpcomingEventsProps) {
-  // Group events by month
-  const eventsByMonth = events.reduce((acc, event) => {
+export default function UpcomingEvents({
+  events,
+  showAll,
+}: UpcomingEventsProps) {
+  const currentTime = Date.now();
+
+  const filteredEvents = showAll
+    ? events
+    : events.filter((event) => event.date.getTime() >= currentTime).slice(0, 5);
+
+  const eventsByMonth = filteredEvents.reduce((acc, event) => {
     const month = event.date.toLocaleDateString("en-US", { month: "long" });
     if (!acc[month]) {
       acc[month] = [];
@@ -17,8 +26,6 @@ export default function UpcomingEvents({ events }: UpcomingEventsProps) {
     acc[month].push(event);
     return acc;
   }, {} as Record<string, Event[]>);
-
-  const currentTime = Date.now();
 
   const formatEventDate = (date: Date): string => {
     const day = date.toLocaleDateString("en-US", { weekday: "short" });
@@ -49,16 +56,15 @@ export default function UpcomingEvents({ events }: UpcomingEventsProps) {
       <div
         className={`flex items-start gap-4 ${isPast ? "text-neutral-300" : ""}`}
       >
-        <div className={`flex-1 min-w-0 ${isPast ? "line-through" : ""}`}>
-          <p className="">{event.name}</p>
-        </div>
         <div className="flex gap-8 items-start">
-          <p className="text-right w-20 flex-shrink-0">
-            {formatEventDate(event.date)}
-          </p>
-          <p className="text-right w-16 flex-shrink-0">
-            {formatEventTime(event.date)}
-          </p>
+          <p className="w-20 flex-shrink-0">{formatEventDate(event.date)}</p>
+          <p className="w-16 flex-shrink-0">{formatEventTime(event.date)}</p>
+        </div>
+
+        <div
+          className={`items-end flex-1 min-w-0 ${isPast ? "line-through" : ""}`}
+        >
+          <p className="text-right">{event.name}</p>
         </div>
       </div>
     );
