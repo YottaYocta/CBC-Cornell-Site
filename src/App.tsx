@@ -1,97 +1,75 @@
 import "@fontsource/inika";
 import Icon from "./assets/tempIcon.svg?react";
 import IsometricCornell from "./IsometricCornell";
-import UpcomingEvents from "./UpcomingEvents";
-
-// Event data
-type CalendarEvent = {
-  date: Date;
-  title: string;
-};
-
-const upcomingEvents: CalendarEvent[] = [
-  {
-    date: new Date("2025-09-23T12:00:00-08:00"),
-    title: "Societal Impacts of AI",
-  },
-  {
-    date: new Date("2025-09-24T16:00:00-08:00"),
-    title: "Claude Code",
-  },
-  {
-    date: new Date("2025-09-30T13:00:00-08:00"),
-    title: "AI Research Salon",
-  },
-  {
-    date: new Date("2025-10-01T16:00:00-08:00"),
-    title: "Building Agents",
-  },
-  {
-    date: new Date("2025-10-07T12:00:00-08:00"),
-    title: "Claude Code",
-  },
-  {
-    date: new Date("2025-10-08T16:00:00-08:00"),
-    title: "Societal Impacts of AI",
-  },
-  {
-    date: new Date("2025-10-21T12:00:00-08:00"),
-    title: "Building Agents",
-  },
-  {
-    date: new Date("2025-10-22T16:00:00-08:00"),
-    title: "AI Research Salon",
-  },
-  {
-    date: new Date("2025-10-28T12:00:00-08:00"),
-    title: "Building with MCP",
-  },
-  {
-    date: new Date("2025-10-29T16:00:00-08:00"),
-    title: "Building with MCP",
-  },
-  {
-    date: new Date("2025-11-12T12:00:00-08:00"),
-    title: "Claude Code",
-  },
-  {
-    date: new Date("2025-11-12T16:00:00-08:00"),
-    title: "Entering the workforce in a post AI world",
-  },
-];
-
-function formatEventDate(date: Date): string {
-  const day = date.toLocaleDateString("en-US", { weekday: "short" });
-  const dateNum = date.getDate();
-  const suffix =
-    dateNum % 10 === 1 && dateNum !== 11
-      ? "st"
-      : dateNum % 10 === 2 && dateNum !== 12
-      ? "nd"
-      : dateNum % 10 === 3 && dateNum !== 13
-      ? "rd"
-      : "th";
-  return `${day}, ${dateNum}${suffix}`;
-}
-
-function formatEventTime(date: Date): string {
-  return date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
+import UpcomingEvents, { type Event } from "./UpcomingEvents";
 
 function App() {
-  const now = new Date();
-  const futureEvents = upcomingEvents
-    .filter((event) => event.date >= now)
-    .map((event) => ({
-      name: event.title,
-      date: formatEventDate(event.date),
-      time: formatEventTime(event.date),
-      month: event.date.toLocaleDateString("en-US", { month: "long" }),
-    }));
+  const allEvents: Event[] = [
+    {
+      date: new Date("2025-09-23T12:00:00-08:00"),
+      name: "Societal Impacts of AI",
+    },
+    {
+      date: new Date("2025-09-24T16:00:00-08:00"),
+      name: "Claude Code",
+    },
+    {
+      date: new Date("2025-09-30T13:00:00-08:00"),
+      name: "AI Research Salon",
+    },
+    {
+      date: new Date("2025-10-01T16:00:00-08:00"),
+      name: "Building Agents",
+    },
+    {
+      date: new Date("2025-10-07T12:00:00-08:00"),
+      name: "Claude Code",
+    },
+    {
+      date: new Date("2025-10-08T16:00:00-08:00"),
+      name: "Societal Impacts of AI",
+    },
+    {
+      date: new Date("2025-10-10T19:15:00-04:00"),
+      name: "Club Meeting",
+    },
+    {
+      date: new Date("2025-10-21T12:00:00-08:00"),
+      name: "Building Agents",
+    },
+    {
+      date: new Date("2025-10-22T16:00:00-08:00"),
+      name: "AI Research Salon",
+    },
+    {
+      date: new Date("2025-10-24T19:15:00-04:00"),
+      name: "Club Meeting",
+    },
+    {
+      date: new Date("2025-10-28T12:00:00-08:00"),
+      name: "Building with MCP",
+    },
+    {
+      date: new Date("2025-10-29T16:00:00-08:00"),
+      name: "Building with MCP",
+    },
+    {
+      date: new Date("2025-11-07T19:15:00-05:00"),
+      name: "Club Meeting",
+    },
+    {
+      date: new Date("2025-11-12T12:00:00-08:00"),
+      name: "Claude Code",
+    },
+    {
+      date: new Date("2025-11-12T16:00:00-08:00"),
+      name: "Entering the workforce in a post AI world",
+    },
+    {
+      date: new Date("2025-11-21T19:15:00-05:00"),
+      name: "Club Meeting",
+    },
+  ];
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-background font-inika sm:text-base text-sm leading-8">
@@ -99,7 +77,7 @@ function App() {
         <div className="w-2xl max-w-full h-min flex justify-between py-3 items-center">
           <div className="flex gap-4 w-min items-center">
             <Icon className="w-10 h-10" />
-            <p className="text-nowrap">Claude Builders Club @ Cornell</p>
+            <p className="text-nowrap">CBC @ Cornell</p>
           </div>
           <div className="flex gap-8 items-center text-sm">
             {/* <a href="#about" className="text-nowrap">
@@ -114,10 +92,9 @@ function App() {
             <a
               href="https://join.slack.com/t/cornellclaude-suc1909/shared_invite/zt-3cyow4z6c-Ql14rUGf3JIj9T6P_efZ0g"
               target="_blank"
+              className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md transition duration-75 cursor-pointer text-nowrap"
             >
-              <button className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md transition duration-75 cursor-pointer text-nowrap">
-                Join our Slack
-              </button>
+              Join our Slack
             </a>
           </div>
         </div>
@@ -137,10 +114,10 @@ function App() {
             About
           </h2> */}
           <p>
-            Cornell's Claude Builders Club is a student-run branch of
-            Anthropic's Claude Builders Club Program. We aim to build, learn,
-            and share projects that push the boundaries of what's possible with
-            modern AI tools.{" "}
+            <span className="font-bold">Cornell's Claude Builders Club </span>
+            is a student-run branch of Anthropic's Claude Builders Club Program.
+            We aim to build, learn, and share projects that push the boundaries
+            of what's possible with modern AI tools.{" "}
           </p>
         </section>
 
@@ -148,18 +125,18 @@ function App() {
           id="upcoming-events"
           className="w-2xl max-w-full flex flex-col gap-8"
         >
-          <h2 className="w-full sm:text-lg text-neutral-400 border-b border-b-neutral-300">
+          <h2 className="w-full sm:text-lg text-neutral-800 border-b border-b-neutral-300">
             Events
           </h2>
 
-          <UpcomingEvents events={futureEvents} />
+          <UpcomingEvents events={allEvents} />
         </section>
 
         <section
           id="our-team"
-          className="w-2xl max-w-full flex flex-col justify-center items-start gap-2"
+          className="w-2xl max-w-full flex flex-col justify-center items-start gap-8"
         >
-          <h2 className="w-full text-neutral-400 border-b border-b-neutral-300 text-nowrap sm:text-lg">
+          <h2 className="w-full text-neutral-800 border-b border-b-neutral-300 text-nowrap sm:text-lg">
             Our Team
           </h2>
           <p>
