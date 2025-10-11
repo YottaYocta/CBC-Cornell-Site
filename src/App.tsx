@@ -6,6 +6,40 @@ import UpcomingEvents, { type Event } from "./UpcomingEvents";
 
 function App() {
   const [showAllEvents, setShowAllEvents] = React.useState(false);
+  const [timeRemaining, setTimeRemaining] = React.useState("");
+
+  // Calculate deadline: 48 hours from 7:15 PM today
+  const deadline = React.useMemo(() => {
+    const today = new Date();
+    today.setHours(19, 15, 0, 0); // 7:15 PM
+    return new Date(today.getTime() + 48 * 60 * 60 * 1000); // Add 48 hours
+  }, []);
+
+  React.useEffect(() => {
+    const updateTimer = () => {
+      const now = new Date();
+      const diff = Math.max(0, deadline.getTime() - now.getTime());
+
+      if (diff === 0) {
+        setTimeRemaining("0hr 0min 0s");
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeRemaining(`${hours}hr ${minutes}min ${seconds}s`);
+    };
+
+    // Update immediately
+    updateTimer();
+
+    // Then update every second
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [deadline]);
 
   const allEvents: Event[] = [
     {
@@ -34,7 +68,7 @@ function App() {
     },
     {
       date: new Date("2025-10-10T19:15:00-04:00"),
-      name: "Club Meeting @ Collegetown Ehub",
+      name: "Club Meeting @ CTown Ehub",
     },
     {
       date: new Date("2025-10-21T12:00:00-08:00"),
@@ -46,7 +80,7 @@ function App() {
     },
     {
       date: new Date("2025-10-24T18:15:00-04:00"),
-      name: "Club Meeting @ Collegetown Ehub",
+      name: "Club Meeting @ CTown Ehub",
     },
     {
       date: new Date("2025-10-28T12:00:00-08:00"),
@@ -58,7 +92,7 @@ function App() {
     },
     {
       date: new Date("2025-11-07T18:15:00-05:00"),
-      name: "Club Meeting @ Collegetown Ehub",
+      name: "Club Meeting @ CTown Ehub",
     },
     {
       date: new Date("2025-11-12T12:00:00-08:00"),
@@ -70,7 +104,7 @@ function App() {
     },
     {
       date: new Date("2025-11-21T18:15:00-05:00"),
-      name: "Club Meeting @ Collegetown Ehub",
+      name: "Club Meeting @ CTown Ehub",
     },
   ];
 
@@ -103,10 +137,33 @@ function App() {
         </div>
       </nav>
       <main className="w-full min-h-full h-full flex flex-col items-center bg-background gap-12 py-8 text-neutral-600 px-4 text-justify">
+        <div className="w-2xl max-w-full border border-[#a2d89e] drop-shadow-amber-300 shadow rounded-md bg-white flex-col gap-4 overflow-clip">
+          <div className="w-full flex items-center justify-center py-1 bg-[#d9f3c7]">
+            <p className="text-[#75b470]">Announcement</p>
+          </div>
+
+          <div className="w-full flex items-center justify-center p-4 border-t border-[#a2d89e]">
+            <div className="w-full flex flex-col justify-between items-center text-nowrap">
+              <p className="font-bold">
+                48-hour App Building Challenge Now Live!
+              </p>
+              <p>Time remaining: {timeRemaining}</p>
+            </div>
+            <p>
+              <a
+                className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md transition duration-75 cursor-pointer text-nowrap mr-8"
+                href="mailto:jlc565@cornell.edu?subject=48 Hour App Challenge - [Your Name]"
+              >
+                Submit your Creations
+              </a>
+            </p>
+          </div>
+        </div>
+
         <IsometricCornell
-          width={10}
-          height={6}
-          className="w-2xl max-w-full -mt-4 min-h-64 sm:min-h-96 "
+          width={window.innerWidth < 500 ? 6 : 10}
+          height={window.innerWidth < 500 ? 6 : 6}
+          className="w-xl max-w-full -mt-4 min-h-64 sm:min-h-96 "
         ></IsometricCornell>
 
         <section
@@ -131,11 +188,15 @@ function App() {
               onClick={() => setShowAllEvents(!showAllEvents)}
               className="text-sm underline hover:no-underline cursor-pointer"
             >
-              {showAllEvents ? "hide all events" : "show all events"}
+              {showAllEvents ? "Show less" : "Show all events"}
             </button>
           </div>
 
-          <UpcomingEvents events={allEvents} showAll={showAllEvents} />
+          <UpcomingEvents
+            events={allEvents}
+            showAll={showAllEvents}
+            handleShowAll={setShowAllEvents}
+          />
         </section>
 
         <section

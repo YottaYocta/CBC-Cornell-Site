@@ -3,14 +3,16 @@ export type Event = {
   date: Date;
 };
 
-type UpcomingEventsProps = {
+interface UpcomingEventsProps {
   events: Event[];
   showAll: boolean;
-};
+  handleShowAll?: (showAll: boolean) => void;
+}
 
 export default function UpcomingEvents({
   events,
   showAll,
+  handleShowAll,
 }: UpcomingEventsProps) {
   const currentTime = Date.now();
 
@@ -54,9 +56,11 @@ export default function UpcomingEvents({
 
     return (
       <div
-        className={`flex items-start gap-4 ${isPast ? "text-neutral-300" : ""}`}
+        className={`flex items-start gap-4 ${
+          isPast ? "text-neutral-300" : ""
+        } border-b border-b-neutral-300 border-dashed`}
       >
-        <div className="flex gap-8 items-start">
+        <div className="flex gap-2 sm:gap-8 items-start">
           <p className="w-20 flex-shrink-0">{formatEventDate(event.date)}</p>
           <p className="w-16 flex-shrink-0">{formatEventTime(event.date)}</p>
         </div>
@@ -93,6 +97,16 @@ export default function UpcomingEvents({
       {Object.entries(eventsByMonth).map(([month, monthEvents]) => (
         <EventSection key={month} title={month} events={monthEvents} />
       ))}
+      {showAll ? (
+        <button
+          onClick={() => (handleShowAll ? handleShowAll(!showAll) : {})}
+          className="text-sm underline hover:no-underline cursor-pointer"
+        >
+          Show Less
+        </button>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
