@@ -146,7 +146,7 @@ function App() {
             <p className="text-[#75b470]">Announcement</p>
           </div>
 
-          <div className="w-full flex items-center justify-center p-4 border-t border-[#a2d89e]">
+          <div className="w-full flex gap-4 flex-col items-center justify-center p-4 border-t border-[#a2d89e]">
             <div className="w-full flex flex-col justify-between items-center text-nowrap">
               <p className="font-bold">
                 48-hour App Building Challenge Now Live!
@@ -155,7 +155,7 @@ function App() {
             </div>
             <p>
               <a
-                className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md transition duration-75 cursor-pointer text-nowrap mr-8"
+                className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md transition duration-75 cursor-pointer text-nowrap"
                 href="mailto:jlc565@cornell.edu?subject=48 Hour App Challenge - [Your Name]"
               >
                 Submit your Creations
