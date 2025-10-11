@@ -8,11 +8,9 @@ function App() {
   const [showAllEvents, setShowAllEvents] = React.useState(false);
   const [timeRemaining, setTimeRemaining] = React.useState("");
 
-  // Calculate deadline: 48 hours from 7:15 PM today
+  // Deadline: October 12, 2025 at 7:15 PM (48 hours from Oct 10, 7:15 PM)
   const deadline = React.useMemo(() => {
-    const today = new Date();
-    today.setHours(19, 15, 0, 0); // 7:15 PM
-    return new Date(today.getTime() + 48 * 60 * 60 * 1000); // Add 48 hours
+    return new Date("2025-10-12T19:15:00-04:00");
   }, []);
 
   React.useEffect(() => {
