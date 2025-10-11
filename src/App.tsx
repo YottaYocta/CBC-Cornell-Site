@@ -103,6 +103,10 @@ function App() {
       name: "Entering the workforce in a post AI world",
     },
     {
+      date: new Date("2025-11-15T08:00:00-05:00"),
+      name: "Claude Hackathon",
+    },
+    {
       date: new Date("2025-11-21T18:15:00-05:00"),
       name: "Club Meeting @ CTown Ehub",
     },
