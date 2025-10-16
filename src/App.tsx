@@ -3,9 +3,56 @@ import React from "react";
 import Icon from "./assets/tempIcon.svg?react";
 import IsometricCornell from "./IsometricCornell";
 import UpcomingEvents, { type Event } from "./UpcomingEvents";
+import PersonRow from "./PersonRow";
+
+interface Person {
+  name: string;
+  role: string;
+  email?: string;
+}
 
 function App() {
   const [showAllEvents, setShowAllEvents] = React.useState(false);
+
+  const teamMembers: Person[] = [
+    {
+      name: "Juliet Crane",
+      role: "President",
+      email: "jlc565@cornell.edu",
+    },
+    {
+      name: "Christina Joseph",
+      role: "Vice President",
+    },
+    {
+      name: "Vincent Misterkiewicz",
+      role: "Secretary",
+    },
+    {
+      name: "Katie Xiao",
+      role: "Treasurer",
+    },
+    {
+      name: "Kalia Cheung",
+      role: "Marketing Chair",
+    },
+    {
+      name: "Clément Rozé",
+      role: "DEI",
+    },
+    {
+      name: "Ryan Qiu",
+      role: "Website Chair",
+    },
+    {
+      name: "Sarah Swee",
+      role: "Outreach Chair",
+    },
+    {
+      name: "Vivian Ren",
+      role: "Senior Advisor",
+    },
+  ];
 
   const allEvents: Event[] = [
     {
@@ -144,6 +191,17 @@ function App() {
           <h2 className="w-full text-neutral-900 border-b border-b-neutral-300 text-nowrap sm:text-lg font-bold">
             Our Team
           </h2>
+
+          <div className="w-full max-w-full flex flex-col gap-3">
+            {teamMembers.map((member) => (
+              <PersonRow
+                key={member.name}
+                role={member.role}
+                name={member.name}
+                email={member.email}
+              />
+            ))}
+          </div>
           <p>
             CBC @ Cornell is open to all, regardless of technical background.
             Just join{" "}

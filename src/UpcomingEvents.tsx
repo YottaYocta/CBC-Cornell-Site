@@ -1,3 +1,5 @@
+import ThreeColRow from "./ThreeColRow";
+
 export type Event = {
   name: string;
   date: Date;
@@ -55,22 +57,12 @@ export default function UpcomingEvents({
     const isPast = event.date.getTime() < currentTime;
 
     return (
-      <div
-        className={`flex items-start gap-4 ${
-          isPast ? "text-neutral-300" : ""
-        } border-b border-b-neutral-300 border-dashed`}
-      >
-        <div className="flex gap-2 sm:gap-8 items-start">
-          <p className="w-20 flex-shrink-0">{formatEventDate(event.date)}</p>
-          <p className="w-16 flex-shrink-0">{formatEventTime(event.date)}</p>
-        </div>
-
-        <div
-          className={`items-end flex-1 min-w-0 ${isPast ? "line-through" : ""}`}
-        >
-          <p className="text-right">{event.name}</p>
-        </div>
-      </div>
+      <ThreeColRow
+        col1={formatEventDate(event.date)}
+        col2={formatEventTime(event.date)}
+        col3={event.name}
+        disabled={isPast}
+      />
     );
   };
 
