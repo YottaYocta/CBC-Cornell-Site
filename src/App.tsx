@@ -52,6 +52,14 @@ function App() {
       name: "Vivian Ren",
       role: "Senior Advisor",
     },
+    {
+      name: "Vivian Ren",
+      role: "Senior Advisor",
+    },
+    {
+      name: "Frank Pappacoda",
+      role: "Program Director",
+    },
   ];
 
   const allEvents: Event[] = [
