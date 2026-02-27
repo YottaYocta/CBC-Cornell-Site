@@ -153,7 +153,7 @@ const IsometricCornell: React.FC<IsometricCornellProps> = ({
               onClick={isTopGrass ? () => handleAddTower(x, y, z) : undefined}
             >
               {voxelElement}
-            </g>
+            </g>,
           );
         }
       }
@@ -189,8 +189,8 @@ export default IsometricCornell;
 function populateBlock(width: number, height: number): VoxelGrid {
   const block: VoxelGrid = Array.from({ length: width }, () =>
     Array.from({ length: width }, () =>
-      Array.from({ length: height }, () => null)
-    )
+      Array.from({ length: height }, () => null),
+    ),
   );
 
   const solidHeight = 1;
@@ -207,7 +207,7 @@ function populateBlock(width: number, height: number): VoxelGrid {
         Math.cos(y / cosPeriod + globalOffset);
 
       const additionalHeight = Math.floor(
-        ((waveHeight + 2) / 4) * maxWaveHeight
+        ((waveHeight + 2) / 4) * maxWaveHeight,
       );
       const h = solidHeight + additionalHeight;
 
@@ -270,7 +270,7 @@ function isoProject(
   x: number,
   y: number,
   z: number,
-  tileSize = TILE_SIZE
+  tileSize = TILE_SIZE,
 ): [number, number] {
   const isoX = (x - y) * tileSize;
   const isoY = (x + y) * tileSize * 0.5 - z * tileSize;
@@ -282,7 +282,7 @@ function drawCubeVoxel(
   y: number,
   z: number,
   color: string,
-  lineColor?: string
+  lineColor?: string,
 ) {
   const [isoX, isoY] = isoProject(x, y, z);
   const size = TILE_SIZE;
@@ -339,7 +339,7 @@ function drawPyramidVoxel(
   y: number,
   z: number,
   color: string,
-  lineColor?: string
+  lineColor?: string,
 ) {
   const stroke = lineColor ?? shadeColor(color, -40);
 
@@ -372,7 +372,7 @@ function drawPyramidVoxel(
 
 function shadeColor(color: string, percent: number): string {
   const match = color.match(
-    /hsl\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)/i
+    /hsl\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)/i,
   );
 
   if (!match) return color;

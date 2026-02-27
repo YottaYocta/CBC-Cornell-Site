@@ -16,26 +16,31 @@ function App() {
 
   const teamMembers: Person[] = [
     {
-      name: "Juliet Crane",
-      role: "President",
-      email: "jlc565@cornell.edu",
+      name: "Kalia Cheung",
+      role: "Co-President",
+      email: "kc2274@cornell.edu",
     },
     {
       name: "Christina Joseph",
-      role: "Vice President",
+      role: "Co-President",
+      email: "cmj95@cornell.edu",
     },
     {
-      name: "Vincent Misterkiewicz",
-      role: "Secretary",
+      name: "Ethan Yang",
+      role: "Outreach Chair",
+      email: "e.yang4518@gmail.com",
     },
+
+    {
+      name: "Adeeb Khan",
+      role: "Hackathon Chair",
+    },
+
     {
       name: "Katie Xiao",
       role: "Treasurer",
     },
-    {
-      name: "Kalia Cheung",
-      role: "Marketing Chair",
-    },
+
     {
       name: "Clément Rozé",
       role: "DEI",
@@ -45,20 +50,16 @@ function App() {
       role: "Website Chair",
     },
     {
-      name: "Sarah Swee",
-      role: "Outreach Chair",
+      name: "Himani Agarwal",
+      role: "Marketing Chair",
     },
     {
       name: "Vivian Ren",
       role: "Senior Advisor",
     },
     {
-      name: "Vivian Ren",
-      role: "Senior Advisor",
-    },
-    {
-      name: "Frank Pappacoda",
-      role: "Program Director",
+      name: "Juliet Crane",
+      role: "Alumni Advisor",
     },
   ];
 
@@ -130,6 +131,26 @@ function App() {
     {
       date: new Date("2025-11-21T18:15:00-05:00"),
       name: "Club Meeting @ CTown Ehub",
+    },
+    {
+      date: new Date("2026-02-26T17:00:00-05:00"),
+      name: "Second Meeting",
+    },
+    {
+      date: new Date("2026-03-06T18:30:00-05:00"),
+      name: "Third Meeting",
+    },
+    {
+      date: new Date("2026-03-18T18:30:00-05:00"),
+      name: "Fourth Meeting",
+    },
+    {
+      date: new Date("2026-04-10T18:30:00-05:00"),
+      name: "Hackathon Social Mixer",
+    },
+    {
+      date: new Date("2026-04-17T18:30:00-05:00"),
+      name: "Fifth Meeting",
     },
   ].sort((a, b) => a.date.getTime() - b.date.getTime());
 
