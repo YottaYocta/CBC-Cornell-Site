@@ -141,15 +141,15 @@ function App() {
       name: "Third Meeting",
     },
     {
-      date: new Date("2026-03-18T18:30:00-05:00"),
+      date: new Date("2026-03-18T17:30:00-05:00"),
       name: "Fourth Meeting",
     },
     {
-      date: new Date("2026-04-10T18:30:00-05:00"),
+      date: new Date("2026-04-10T17:30:00-05:00"),
       name: "Hackathon Social Mixer",
     },
     {
-      date: new Date("2026-04-17T18:30:00-05:00"),
+      date: new Date("2026-04-17T17:30:00-05:00"),
       name: "Fifth Meeting",
     },
   ].sort((a, b) => a.date.getTime() - b.date.getTime());
