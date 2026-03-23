@@ -152,6 +152,10 @@ function App() {
       date: new Date("2026-04-17T17:30:00-05:00"),
       name: "Fifth Meeting",
     },
+    {
+      date: new Date("2026-04-25T07:00:00-05:00"),
+      name: "Hackathon",
+    },
   ].sort((a, b) => a.date.getTime() - b.date.getTime());
 
   return (
