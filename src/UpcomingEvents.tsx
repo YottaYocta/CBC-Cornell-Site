@@ -3,6 +3,7 @@ import ThreeColRow from "./ThreeColRow";
 export type Event = {
   name: string;
   date: Date;
+  link?: string;
 };
 
 interface UpcomingEventsProps {
@@ -22,14 +23,17 @@ export default function UpcomingEvents({
     ? events
     : events.filter((event) => event.date.getTime() >= currentTime).slice(0, 5);
 
-  const eventsByMonth = filteredEvents.reduce((acc, event) => {
-    const month = event.date.toLocaleDateString("en-US", { month: "long" });
-    if (!acc[month]) {
-      acc[month] = [];
-    }
-    acc[month].push(event);
-    return acc;
-  }, {} as Record<string, Event[]>);
+  const eventsByMonth = filteredEvents.reduce(
+    (acc, event) => {
+      const month = event.date.toLocaleDateString("en-US", { month: "long" });
+      if (!acc[month]) {
+        acc[month] = [];
+      }
+      acc[month].push(event);
+      return acc;
+    },
+    {} as Record<string, Event[]>,
+  );
 
   const formatEventDate = (date: Date): string => {
     const day = date.toLocaleDateString("en-US", { weekday: "short" });
@@ -38,10 +42,10 @@ export default function UpcomingEvents({
       dateNum % 10 === 1 && dateNum !== 11
         ? "st"
         : dateNum % 10 === 2 && dateNum !== 12
-        ? "nd"
-        : dateNum % 10 === 3 && dateNum !== 13
-        ? "rd"
-        : "th";
+          ? "nd"
+          : dateNum % 10 === 3 && dateNum !== 13
+            ? "rd"
+            : "th";
     return `${day}, ${dateNum}${suffix}`;
   };
 
@@ -56,7 +60,7 @@ export default function UpcomingEvents({
   const EventRow = ({ event }: { event: Event }) => {
     const isPast = event.date.getTime() < currentTime;
 
-    return (
+    const row = (
       <ThreeColRow
         col1={formatEventDate(event.date)}
         col2={formatEventTime(event.date)}
@@ -64,6 +68,21 @@ export default function UpcomingEvents({
         disabled={isPast}
       />
     );
+
+    if (event.link) {
+      return (
+        <a
+          href={event.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          {row}
+        </a>
+      );
+    }
+
+    return row;
   };
 
   // Render a section of events grouped by month
