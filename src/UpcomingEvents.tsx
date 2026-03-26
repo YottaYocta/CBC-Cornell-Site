@@ -75,7 +75,7 @@ export default function UpcomingEvents({
           href={event.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:underline"
+          className="underline"
         >
           {row}
         </a>
