@@ -169,7 +169,7 @@ function App() {
           </div>
           <div className="flex gap-8 items-center text-sm">
             <a
-              href="https://join.slack.com/t/cornellclaude-suc1909/shared_invite/zt-3cyow4z6c-Ql14rUGf3JIj9T6P_efZ0g"
+              href="https://join.slack.com/t/cornellclaude-suc1909/shared_invite/zt-3w6akc0hu-eO7L5eMPMt_n8XGNnJ80CA"
               target="_blank"
               className="bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-500 px-3 py-2 rounded-md transition duration-75 cursor-pointer text-nowrap"
             >
